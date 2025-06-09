@@ -2,30 +2,38 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>🐍 Game Snake Lucu + Avatar + Musik</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <title>🐍 Snake Lucu + Avatar</title>
   <style>
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
-    body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to bottom, #ffe6f0, #fdf6f9);
-      text-align: center;
-      user-select: none;
-      height: 100vh;
-      overflow: hidden;
-      padding: 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
+    body {
+      overflow: hidden;
+      position: relative;
+    }
+
+    #top-area {
+      padding: 5px;
+      text-align: center;
+      z-index: 2;
+    }
+
     h2 {
       font-size: 20px;
-      margin: 10px 0;
+      margin: 6px 0;
     }
+
     button, a {
       font-size: 14px;
       padding: 8px 16px;
@@ -36,62 +44,76 @@
       font-weight: 700;
       box-shadow: 0 0 8px #ff69b4;
       cursor: pointer;
+      margin: 4px;
     }
+
     button:hover, a:hover {
       background-color: #e0559a;
     }
-    #music-control, #control-buttons, a {
-      margin: 6px;
-    }
+
     #selected-avatar {
-      font-size: 36px;
+      font-size: 30px;
       margin-bottom: 6px;
     }
+
     #avatar-list {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 6px;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
+
     .avatar-choice {
-      font-size: 24px;
-      width: 40px;
-      height: 40px;
-      line-height: 40px;
+      font-size: 22px;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
       border: 2px solid transparent;
       border-radius: 8px;
       background: #fff0f5;
       cursor: pointer;
+      text-align: center;
     }
+
     .avatar-choice.selected {
       border-color: #ff69b4;
       background-color: #ffe6f0;
     }
+
+    #score {
+      font-size: 15px;
+      color: #d6336c;
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    #game-container {
+      position: relative;
+      flex-grow: 1;
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      justify-content: center;
+    }
+
     #game {
-      width: 90vw;
-      max-width: 320px;
-      height: 90vw;
-      max-height: 320px;
+      width: 100%;
+      height: 100%;
+      max-width: 360px;
+      max-height: 360px;
       background: #fff;
       border: 2px solid #ff69b4;
       border-radius: 14px;
       box-shadow: 0 0 10px #ffb6c1;
-      display: block;
-      margin: 0 auto;
     }
-    #score {
-      font-size: 16px;
-      color: #d6336c;
-      font-weight: bold;
-      margin: 4px 0;
-    }
+
     #love-text {
       position: absolute;
-      top: 45%;
+      top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 13px;
+      font-size: 14px;
       color: #ff1a75;
       background: rgba(255,182,193,0.9);
       padding: 6px 12px;
@@ -103,9 +125,10 @@
       font-family: 'Comic Sans MS', cursive;
       z-index: 10;
     }
+
     #joystick {
-      position: fixed;
-      bottom: 10px;
+      position: absolute;
+      bottom: 16px;
       left: 50%;
       transform: translateX(-50%);
       width: 80px;
@@ -114,8 +137,9 @@
       background: rgba(255,192,203,0.3);
       border-radius: 50%;
       touch-action: none;
-      z-index: 20;
+      z-index: 5;
     }
+
     #stick {
       position: absolute;
       width: 40px;
@@ -131,21 +155,18 @@
 </head>
 <body>
 
-  <div id="music-control">
-    <button id="music-toggle">Putar Musik Biar makin seru</button>
-  </div>
-
-    <div style="margin-top: 30px;">
+  <div id="top-area">
+    <button id="music-toggle">Putar Musik</button>
   <a href="awalan.html" 
      style="
        display: inline-block;
        background-color: #ff69b4;
        color: white;
-       padding: 12px 28px;
+       padding: 6px 10px;
        border-radius: 25px;
        font-weight: 700;
        text-decoration: none;
-       font-size: 18px;
+       font-size: 14px;
        box-shadow: 0 0 12px #ff69b4;
        user-select: none;
        transition: background-color 0.3s ease;
@@ -155,32 +176,28 @@
     ← Kembali ke HP
   </a>
 </div>
-
-  <h2>🐍 Snake Game -_-</h2>
-
-  <div id="selected-avatar">🐰</div>
-  <div id="avatar-list">
-    <div tabindex="0" class="avatar-choice selected">🐰</div>
-    <div tabindex="0" class="avatar-choice">🐱</div>
-    <div tabindex="0" class="avatar-choice">🦊</div>
-    <div tabindex="0" class="avatar-choice">🐼</div>
-    <div tabindex="0" class="avatar-choice">🦄</div>
-    <div tabindex="0" class="avatar-choice">🐥</div>
-    <div tabindex="0" class="avatar-choice">🐸</div>
-    <div tabindex="0" class="avatar-choice">🐢</div>
-    <div tabindex="0" class="avatar-choice">🐙</div>
-    <div tabindex="0" class="avatar-choice">🐯</div>
+    <h2>🐍 Game Cacing Lucu</h2>
+    <div id="selected-avatar">🐰</div>
+    <div id="avatar-list">
+      <div tabindex="0" class="avatar-choice selected">🐰</div>
+      <div tabindex="0" class="avatar-choice">🐱</div>
+      <div tabindex="0" class="avatar-choice">🦊</div>
+      <div tabindex="0" class="avatar-choice">🐼</div>
+      <div tabindex="0" class="avatar-choice">🦄</div>
+      <div tabindex="0" class="avatar-choice">🐥</div>
+    </div>
+    <div>
+      <button id="start-button">Mulai</button>
+      <button id="restart-button" style="display:none;">Ulang</button>
+    </div>
+    <div id="score">Skor: 0</div>
   </div>
 
-  <div id="control-buttons">
-    <button id="start-button">Mulai</button>
-    <button id="restart-button" style="display:none;">Ulang</button>
+  <div id="game-container">
+    <canvas id="game" width="300" height="300"></canvas>
+    <div id="love-text">💖 Kamu Imut Banget 💖</div>
+    <div id="joystick"><div id="stick"></div></div>
   </div>
-
-  <div id="score">Skor: 0</div>
-  <canvas id="game" width="400" height="400"></canvas>
-  <div id="love-text"></div>
-  <div id="joystick"><div id="stick"></div></div>
 
   <script>
     // Audio
