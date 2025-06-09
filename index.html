@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Untuk mu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #ffe0f0, #ffd6ec);
+      font-family: 'Quicksand', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .phone {
+      width: 360px;
+      height: 640px;
+      background: white;
+      border: 16px solid #333;
+      border-radius: 36px;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to top, #fff0f5, #ffe4e1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+    h1 {
+      font-size: 1.8em;
+      color: #ff69b4;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.1em;
+      color: #333;
+    }
+    .start-btn {
+      background: #ff69b4;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 10px;
+      animation: pulse 1.5s infinite;
+      transition: transform 0.2s ease;
+    }
+    .start-btn:hover {
+      transform: scale(1.05);
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .song-notif {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 182, 193, 0.95);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      animation: fadeFromTop 3s ease forwards;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    @keyframes fadeFromTop {
+      0% { opacity: 0; transform: translate(-50%, -10px); }
+      10% { opacity: 1; transform: translate(-50%, 0); }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -10px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen" id="homeScreen">
+      <h1>Kuro Project</h1>
+      <p>Cobain ini Yukk, pencet background hp nanti ada berbagai lagu, pencet background pink buat lagu cupid 😊</p>
+      <button class="start-btn" onclick="clickAndGo('game.html')">Cobain deh ✨</button>
+      <button class="start-btn" onclick="clickAndGo('forYou.html')">Pantun 😚</button>
+      <button class="start-btn" onclick="clickAndGo('galeri.html')">Galeri My Queen 💖</button>
+      <button class="start-btn" onclick="clickAndGo('Game cacing.html')">Game cacing 🤳</button>
+    </div>
+  </div>
+
+  <!-- Musik -->
+  <audio id="bgMusic" src="FIFTY FIFTY - Cupid (Twin Version) (Lyrics).mp3" autoplay loop></audio>
+
+  <script>
+    const bgMusic = document.getElementById("bgMusic");
+
+    const songs = [
+      { title: "Sheila On 7 - Dan 💌", src: "Sheila On 7 - Dan (Lyrics).mp3" },
+      { title: "We Don’t Talk Anymore 💔", src: "charlie puth ft. selena gomez - we don't talk anymore  slowed  reverb.mp3" },
+      { title: "Virgoun - Surat Cinta untuk Starla ✉️", src: "Surat Cinta Untuk Starla - Virgoun (Lirik lagu).mp3" },
+      { title: "We Can’t Be Friends 😢", src: "Ariana Grande - we can't be friends (wait for your love) [ Slowed  Reverb  Lyrics ].mp3" },
+      { title: "FIFTY FIFTY - Cupid 💘", src: "FIFTY FIFTY - Cupid (Twin Version) (Lyrics).mp3" }
+    ];
+
+    let currentSongIndex = 4;
+
+    function playClickSound() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContext();
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(880, ctx.currentTime);
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(1320, ctx.currentTime);
+
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc1.start();
+      osc2.start();
+      osc1.stop(ctx.currentTime + 0.2);
+      osc2.stop(ctx.currentTime + 0.2);
+
+      osc1.onended = () => ctx.close();
+    }
+
+    function clickAndGo(url) {
+      playClickSound();
+      setTimeout(() => {
+        window.location.href = url;
+      }, 150);
+    }
+
+    function showSongNotif(text) {
+      const notif = document.createElement("div");
+      notif.className = "song-notif";
+      notif.innerText = `🎵 play song: ${text}`;
+      document.getElementById("homeScreen").appendChild(notif);
+
+      setTimeout(() => {
+        notif.remove();
+      }, 3000);
+    }
+
+    document.getElementById("homeScreen").addEventListener("click", () => {
+      currentSongIndex = (currentSongIndex + 1) % songs.length;
+      bgMusic.src = songs[currentSongIndex].src;
+      bgMusic.play().then(() => {
+        showSongNotif(songs[currentSongIndex].title);
+      }).catch(() => {
+        console.log("Gagal memutar lagu baru.");
+      });
+    });
+
+    const playMusic = () => {
+      bgMusic.volume = 1.0;
+      bgMusic.play().catch(() => {
+        console.log("Autoplay diblokir, musik akan diputar saat interaksi.");
+      });
+      document.removeEventListener('click', playMusic);
+    };
+    document.addEventListener('click', playMusic);
+  </script>
+</body>
+</html>
