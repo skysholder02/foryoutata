@@ -69,16 +69,6 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .final-message {
-      font-size: 1.5em;
-      margin-top: 20px;
-      color: #d63384;
-      animation: textFade 2s ease-in forwards;
-    }
-    @keyframes textFade {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
     .pantun {
       font-style: italic;
       color: #ff5c8a;
@@ -86,7 +76,6 @@
       user-select: text;
     }
 
-    /* Video fullscreen styles */
     #horrorVideo {
       display: none;
       position: fixed;
@@ -100,7 +89,6 @@
       user-select: none;
     }
 
-    /* Overlay jumpscare text */
     #overlayScare {
       display: none;
       position: fixed;
@@ -132,7 +120,7 @@
 
     <div class="content-box" id="letterContent" role="region" aria-live="polite">
       <p class="pantun">ikan hiu naik tomat,<br />
-       cantik mu ga akan pernah tamatt💕</p>
+      cantik mu ga akan pernah tamatt💕</p>
       <button class="btn" id="btnFlower" aria-label="Nih buat kamu bunga">Nih buat kamu 🌸</button>
     </div>
 
@@ -150,6 +138,8 @@
   <audio id="flowerSound" src="kliklucuu.mp3" preload="auto"></audio>
   <audio id="screamSound" src="seremm.mp3" preload="auto"></audio>
 
+  <div id="overlayScare">👻</div>
+
   <script>
     const clickSound = document.getElementById('clickSound');
     const flowerSound = document.getElementById('flowerSound');
@@ -162,30 +152,35 @@
     const overlayScare = document.getElementById('overlayScare');
     const mainContainer = document.getElementById('mainContainer');
 
-    function tryPlayCupid() {
-      clickSound.play().catch(() => {
-        document.body.addEventListener('click', () => {
-          clickSound.play();
-        }, { once: true });
-      });
-    }
-    tryPlayCupid();
+    let audioStarted = false;
 
-    function playClickSound() {
+    function startClickSound() {
+      if (!audioStarted) {
+        clickSound.currentTime = 0;
+        clickSound.play().catch(e => {});
+        audioStarted = true;
+      } else {
+        clickSound.currentTime = 0;
+        clickSound.play().catch(e => {});
+      }
+    }
+
+    function stopClickSound() {
       clickSound.pause();
       clickSound.currentTime = 0;
-      clickSound.play().catch(e => console.log("Error play clickSound:", e));
+    }
+
+    function playClickSound() {
+      startClickSound();
       if (window.navigator.vibrate) window.navigator.vibrate(50);
     }
 
     function playFlowerSound() {
-      // Stop cupid sound agar tidak tumpang tindih
-      clickSound.pause();
-      clickSound.currentTime = 0;
+      stopClickSound();
 
       flowerSound.pause();
       flowerSound.currentTime = 0;
-      flowerSound.play().catch(e => console.log("Error play flowerSound:", e));
+      flowerSound.play().catch(e => {});
       if (window.navigator.vibrate) window.navigator.vibrate(70);
     }
 
@@ -202,13 +197,13 @@
     btnFlower.addEventListener('click', async () => {
       playFlowerSound();
 
-      clickSound.pause();
-      clickSound.currentTime = 0;
       mainContainer.style.pointerEvents = 'none';
       letterContent.style.display = 'none';
       letterDiv.style.display = 'none';
       horrorVideo.style.display = 'block';
       horrorVideo.currentTime = 0;
+
+      stopClickSound();
 
       try {
         if (horrorVideo.requestFullscreen) {
@@ -234,8 +229,8 @@
       screamSound.pause();
       screamSound.currentTime = 0;
 
-      horrorVideo.play().catch(e => console.log("Video play error:", e));
-      screamSound.play().catch(e => console.log("Jeritan play error:", e));
+      horrorVideo.play().catch(e => {});
+      screamSound.play().catch(e => {});
 
       setTimeout(() => {
         overlayScare.style.display = 'block';
@@ -244,6 +239,12 @@
         }, 4000);
       }, 500);
     });
+
+    document.addEventListener('click', () => {
+      if (!audioStarted) {
+        startClickSound();
+      }
+    }, { once: true });
 
     document.addEventListener('fullscreenchange', () => {
       if (!document.fullscreenElement && horrorVideo.style.display === 'block') {
@@ -260,11 +261,7 @@
 
     document.addEventListener('keydown', (e) => {
       if (document.fullscreenElement === horrorVideo) {
-        const forbiddenKeys = [
-          ' ', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
-          'MediaPlayPause', 'MediaTrackNext', 'MediaTrackPrevious',
-          'F', 'f'
-        ];
+        const forbiddenKeys = [' ', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'MediaPlayPause', 'MediaTrackNext', 'MediaTrackPrevious', 'F', 'f'];
         if (forbiddenKeys.includes(e.key) || (e.shiftKey && (e.key === '.' || e.key === ','))) {
           e.preventDefault();
           e.stopPropagation();
