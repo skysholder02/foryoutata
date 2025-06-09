@@ -96,6 +96,9 @@
       object-fit: cover;
       z-index: 9999;
       background: black;
+
+      pointer-events: none; /* Disable user interaction */
+      user-select: none;
     }
 
     /* Overlay jumpscare text */
@@ -138,7 +141,7 @@
   </div>
 
   <!-- Video Jumpscare -->
-  <video id="horrorVideo" playsinline webkit-playsinline preload="auto">
+  <video id="horrorVideo" playsinline webkit-playsinline preload="auto" muted loop autoplay>
     <source src="seremm.mp4" type="video/mp4" />
     Browsermu tidak support video.
   </video>
@@ -147,6 +150,7 @@
   <audio id="clickSound" src="cupid.mp3" preload="auto"></audio>
   <audio id="flowerSound" src="kliklucuu.mp3" preload="auto"></audio>
   <audio id="screamSound" src="seremm.mp3" preload="auto"></audio>
+
 
   <script>
     const clickSound = document.getElementById('clickSound');
@@ -232,7 +236,7 @@
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         screamSource = audioCtx.createMediaElementSource(screamSound);
         gainNode = audioCtx.createGain();
-        gainNode.gain.value = 5; // tingkatkan volume 3x
+        gainNode.gain.value = 10; // tingkatkan volume 5x
         screamSource.connect(gainNode);
         gainNode.connect(audioCtx.destination);
       }
@@ -262,10 +266,38 @@
       }
     });
 
-    // Loop video biar gak berhenti
+    // Loop video biar gak berhenti (sudah loop attribute, ini backup)
     horrorVideo.addEventListener('ended', () => {
       horrorVideo.currentTime = 0;
       horrorVideo.play();
+    });
+
+    // Disable keyboard shortcut untuk ubah speed, pause, fullscreen saat video fullscreen aktif
+    document.addEventListener('keydown', (e) => {
+      if (document.fullscreenElement === horrorVideo) {
+        const forbiddenKeys = [
+          ' ', // spasi pause/play
+          'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', // seek
+          'MediaPlayPause', 'MediaTrackNext', 'MediaTrackPrevious',
+          'F', 'f' // fullscreen toggle
+        ];
+        if (forbiddenKeys.includes(e.key)) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        // Cegah Shift + . / , untuk playback speed
+        if ((e.shiftKey && (e.key === '.' || e.key === ','))) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }
+    });
+
+    // Disable context menu di video fullscreen supaya gak ada opsi playback speed
+    horrorVideo.addEventListener('contextmenu', (e) => {
+      if (document.fullscreenElement === horrorVideo) {
+        e.preventDefault();
+      }
     });
   </script>
 </body>
