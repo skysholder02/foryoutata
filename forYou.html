@@ -11,10 +11,14 @@
       font-family: 'Fredoka', sans-serif;
       background: linear-gradient(to bottom, #ffd1dc, #ffe4e1);
       overflow-x: hidden;
+      height: 100vh;
+      position: relative;
     }
     .container {
       text-align: center;
       padding: 60px 20px;
+      position: relative;
+      z-index: 1;
     }
     h1 {
       font-size: 2.5em;
@@ -31,6 +35,7 @@
       cursor: pointer;
       margin-top: 20px;
       transition: transform 0.3s ease;
+      user-select: none;
     }
     .btn:hover {
       transform: scale(1.05);
@@ -39,10 +44,12 @@
       width: 300px;
       margin: 30px auto;
       cursor: pointer;
+      user-select: none;
     }
     .letter img {
       width: 100%;
       transition: transform 1s ease;
+      user-select: none;
     }
     .letter.open img {
       transform: rotateX(180deg);
@@ -56,20 +63,11 @@
       margin-top: 20px;
       box-shadow: 0 5px 20px rgba(0,0,0,0.1);
       animation: fadeIn 1s forwards;
+      user-select: none;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-    .flower-anim {
-      width: 150px;
-      margin: 0 auto;
-      animation: growFlower 3s ease forwards;
-    }
-    @keyframes growFlower {
-      0% { transform: scaleY(0); opacity: 0; }
-      50% { transform: scaleY(1.1); opacity: 0.7; }
-      100% { transform: scaleY(1); opacity: 1; }
     }
     .final-message {
       font-size: 1.5em;
@@ -85,68 +83,190 @@
       font-style: italic;
       color: #ff5c8a;
       margin-top: 15px;
+      user-select: text;
+    }
+
+    /* Video fullscreen styles */
+    #horrorVideo {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 9999;
+      background: black;
+    }
+
+    /* Overlay jumpscare text */
+    #overlayScare {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 5em;
+      color: #ff0044;
+      text-shadow: 0 0 20px #ff0044;
+      z-index: 10000;
+      user-select: none;
+      pointer-events: none;
+      font-family: 'Fredoka', cursive;
+      animation: scarePulse 1.5s ease infinite alternate;
+    }
+    @keyframes scarePulse {
+      0% { text-shadow: 0 0 10px #ff0044; }
+      100% { text-shadow: 0 0 40px #ff0044; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="mainContainer">
     <h1>💌</h1>
 
-    <div class="letter" onclick="openLetter()">
+    <div class="letter" id="letterDiv" onclick="openLetter()" aria-label="Buka surat cinta">
       <img src="https://cdn-icons-png.flaticon.com/512/254/254638.png" alt="Surat Cinta" />
     </div>
 
-    <div class="content-box" id="letterContent">
+    <div class="content-box" id="letterContent" role="region" aria-live="polite">
       <p class="pantun">ikan hiu naik tomat,<br />
        cantik mu ga akan pernah tamatt💕</p>
-      <button class="btn" onclick="playFlowerSound(); showFlower()">Nih buat kamu 🌸</button>
+      <button class="btn" id="btnFlower" aria-label="Nih buat kamu bunga">Nih buat kamu 🌸</button>
     </div>
 
-    <div id="flowerSection" style="display: none;">
-      <img src="kuntilanak.png" class="flower-anim" alt="Kuntilanak" />
-      <div class="final-message">Awas ada kuntilanak CABULL💞</div>
-    </div>
-
-    <button class="btn" onclick="playClickSound(); window.location.href = 'awalan.html'">Kembali ke awal</button>
+    <button class="btn" onclick="playClickSound(); window.location.href = 'awalan.html'" aria-label="Kembali ke awal">Kembali ke awal</button>
   </div>
+
+  <!-- Video Jumpscare -->
+  <video id="horrorVideo" playsinline webkit-playsinline preload="auto">
+    <source src="seremm.mp4" type="video/mp4" />
+    Browsermu tidak support video.
+  </video>
 
   <!-- Audio -->
   <audio id="clickSound" src="cupid.mp3" preload="auto"></audio>
-  <audio id="flowerSound" src="mwhehehe.mp3" preload="auto"></audio>
+  <audio id="flowerSound" src="kliklucuu.mp3" preload="auto"></audio>
+  <audio id="screamSound" src="seremm.mp3" preload="auto"></audio>
 
   <script>
+    const clickSound = document.getElementById('clickSound');
+    const flowerSound = document.getElementById('flowerSound');
+    const screamSound = document.getElementById('screamSound');
+
+    const letterDiv = document.getElementById('letterDiv');
+    const letterContent = document.getElementById('letterContent');
+    const btnFlower = document.getElementById('btnFlower');
+    const horrorVideo = document.getElementById('horrorVideo');
+    const overlayScare = document.getElementById('overlayScare');
+    const mainContainer = document.getElementById('mainContainer');
+
+    // Main cupid sound (clickSound) autoplay pas load halaman
+    function tryPlayCupid() {
+      clickSound.play().catch(() => {
+        // Kalau gagal autoplay, tunggu klik user pertama untuk play
+        document.body.addEventListener('click', () => {
+          clickSound.play();
+        }, { once: true });
+      });
+    }
+    tryPlayCupid();
+
     function playClickSound() {
-      const sound = document.getElementById('clickSound');
-      if (sound) {
-        sound.pause();
-        sound.currentTime = 0;
-        sound.play().catch(e => console.log("Error play:", e));
-      }
+      clickSound.pause();
+      clickSound.currentTime = 0;
+      clickSound.play().catch(e => console.log("Error play clickSound:", e));
       if (window.navigator.vibrate) window.navigator.vibrate(50);
     }
 
     function playFlowerSound() {
-      const sound = document.getElementById('flowerSound');
-      if (sound) {
-        sound.pause();
-        sound.currentTime = 0;
-        sound.play().catch(e => console.log("Error play:", e));
-      }
+      flowerSound.pause();
+      flowerSound.currentTime = 0;
+      flowerSound.play().catch(e => console.log("Error play flowerSound:", e));
       if (window.navigator.vibrate) window.navigator.vibrate(70);
     }
 
     function openLetter() {
       playClickSound();
-      document.querySelector('.letter').classList.add('open');
+      letterDiv.classList.add('open');
       setTimeout(() => {
-        document.getElementById('letterContent').style.display = 'block';
+        letterContent.style.display = 'block';
       }, 1000);
     }
 
-    function showFlower() {
-      document.getElementById('flowerSection').style.display = 'block';
-      document.getElementById('letterContent').style.display = 'none';
-    }
+    // Buat audio context global untuk boost volume screamSound
+    let audioCtx, screamSource, gainNode;
+
+    btnFlower.addEventListener('click', async () => {
+      playFlowerSound();
+
+      // Stop cupid sound supaya merinding saat video & jeritan main
+      clickSound.pause();
+      clickSound.currentTime = 0;
+
+      // Disable interactions supaya user gak klik lagi
+      mainContainer.style.pointerEvents = 'none';
+
+      // Hide surat dan konten
+      letterContent.style.display = 'none';
+      letterDiv.style.display = 'none';
+
+      // Tampilkan video jumpscare
+      horrorVideo.style.display = 'block';
+      horrorVideo.currentTime = 0;
+
+      // Minta fullscreen
+      try {
+        if (horrorVideo.requestFullscreen) {
+          await horrorVideo.requestFullscreen();
+        } else if (horrorVideo.webkitRequestFullscreen) {
+          await horrorVideo.webkitRequestFullscreen();
+        } else if (horrorVideo.msRequestFullscreen) {
+          await horrorVideo.msRequestFullscreen();
+        }
+      } catch(err) {
+        console.warn("Fullscreen gagal:", err);
+      }
+
+      // Inisialisasi Web Audio API jika belum dibuat
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        screamSource = audioCtx.createMediaElementSource(screamSound);
+        gainNode = audioCtx.createGain();
+        gainNode.gain.value = 5; // tingkatkan volume 3x
+        screamSource.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+      }
+
+      screamSound.pause();
+      screamSound.currentTime = 0;
+
+      // Putar video & jeritan
+      horrorVideo.play().catch(e => console.log("Video play error:", e));
+      screamSound.play().catch(e => console.log("Jeritan play error:", e));
+
+      // Tampilkan overlay scare beberapa detik
+      setTimeout(() => {
+        overlayScare.style.display = 'block';
+        setTimeout(() => {
+          overlayScare.style.display = 'none';
+        }, 4000);
+      }, 500);
+    });
+
+    // Kalau user keluar fullscreen video, coba fullscreen lagi
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement && horrorVideo.style.display === 'block') {
+        setTimeout(() => {
+          horrorVideo.requestFullscreen().catch(() => {});
+        }, 300);
+      }
+    });
+
+    // Loop video biar gak berhenti
+    horrorVideo.addEventListener('ended', () => {
+      horrorVideo.currentTime = 0;
+      horrorVideo.play();
+    });
   </script>
 </body>
 </html>
