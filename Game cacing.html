@@ -45,6 +45,8 @@
       box-shadow: 0 0 8px #ff69b4;
       cursor: pointer;
       margin: 4px;
+      user-select: none;
+      transition: background-color 0.3s ease;
     }
 
     button:hover, a:hover {
@@ -74,6 +76,7 @@
       background: #fff0f5;
       cursor: pointer;
       text-align: center;
+      user-select: none;
     }
 
     .avatar-choice.selected {
@@ -92,20 +95,20 @@
       position: relative;
       flex-grow: 1;
       width: 100%;
-      max-width: 420px;
+      max-width: 320px;
       display: flex;
       justify-content: center;
+      margin-bottom: 16px;
     }
 
     #game {
-      width: 100%;
-      height: 100%;
-      max-width: 360px;
-      max-height: 360px;
+      width: 300px;
+      height: 300px;
       background: #fff;
       border: 2px solid #ff69b4;
       border-radius: 14px;
       box-shadow: 0 0 10px #ffb6c1;
+      touch-action: none;
     }
 
     #love-text {
@@ -124,6 +127,7 @@
       transition: opacity .4s ease;
       font-family: 'Comic Sans MS', cursive;
       z-index: 10;
+      user-select: none;
     }
 
     #joystick {
@@ -138,6 +142,8 @@
       border-radius: 50%;
       touch-action: none;
       z-index: 5;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     #stick {
@@ -150,53 +156,55 @@
       left: 50%;
       transform: translate(-50%, -50%);
       transition: 0.1s ease;
+      user-select: none;
     }
   </style>
 </head>
 <body>
 
   <div id="top-area">
-    <button id="music-toggle">Putar Musik</button>
-  <a href="awalan.html" 
-     style="
-       display: inline-block;
-       background-color: #ff69b4;
-       color: white;
-       padding: 6px 10px;
-       border-radius: 25px;
-       font-weight: 700;
-       text-decoration: none;
-       font-size: 14px;
-       box-shadow: 0 0 12px #ff69b4;
-       user-select: none;
-       transition: background-color 0.3s ease;
-     "
-     onmouseover="this.style.backgroundColor='#e0559a'"
-     onmouseout="this.style.backgroundColor='#ff69b4'">
-    ← Kembali ke HP
-  </a>
-</div>
-    <h2>🐍 Game Cacing Lucu</h2>
-    <div id="selected-avatar">🐰</div>
-    <div id="avatar-list">
-      <div tabindex="0" class="avatar-choice selected">🐰</div>
-      <div tabindex="0" class="avatar-choice">🐱</div>
-      <div tabindex="0" class="avatar-choice">🦊</div>
-      <div tabindex="0" class="avatar-choice">🐼</div>
-      <div tabindex="0" class="avatar-choice">🦄</div>
-      <div tabindex="0" class="avatar-choice">🐥</div>
-    </div>
-    <div>
-      <button id="start-button">Mulai</button>
-      <button id="restart-button" style="display:none;">Ulang</button>
-    </div>
-    <div id="score">Skor: 0</div>
+    <button id="music-toggle">Putar Musik Latar</button>
+    <a href="awalan.html"
+       style="
+         display: inline-block;
+         background-color: #ff69b4;
+         color: white;
+         padding: 6px 10px;
+         border-radius: 25px;
+         font-weight: 700;
+         text-decoration: none;
+         font-size: 14px;
+         box-shadow: 0 0 12px #ff69b4;
+         user-select: none;
+       "
+       onmouseover="this.style.backgroundColor='#e0559a'"
+       onmouseout="this.style.backgroundColor='#ff69b4'">
+      ← Kembali ke HP
+    </a>
   </div>
+
+  <h2>🐍 Game Cacing</h2>
+  <div id="selected-avatar">🐰</div>
+  <div id="avatar-list" role="list">
+    <div tabindex="0" class="avatar-choice selected" role="listitem" aria-selected="true">🐰</div>
+    <div tabindex="0" class="avatar-choice" role="listitem" aria-selected="false">🐱</div>
+    <div tabindex="0" class="avatar-choice" role="listitem" aria-selected="false">🦊</div>
+    <div tabindex="0" class="avatar-choice" role="listitem" aria-selected="false">🐼</div>
+    <div tabindex="0" class="avatar-choice" role="listitem" aria-selected="false">🦄</div>
+    <div tabindex="0" class="avatar-choice" role="listitem" aria-selected="false">🐥</div>
+  </div>
+
+  <div>
+    <button id="start-button">Mulai</button>
+    <button id="restart-button" style="display:none;">Ulang</button>
+  </div>
+
+  <div id="score">Skor: 0</div>
 
   <div id="game-container">
     <canvas id="game" width="300" height="300"></canvas>
-    <div id="love-text">💖 Kamu Imut Banget 💖</div>
-    <div id="joystick"><div id="stick"></div></div>
+    <div id="love-text" aria-live="polite">💖 Kamu Imut Banget 💖</div>
+    <div id="joystick" aria-label="Joystick kontrol arah" role="application" tabindex="0"><div id="stick"></div></div>
   </div>
 
   <script>
@@ -204,7 +212,8 @@
     const soundEat = new Audio('hahaha.mp3');
     const soundClick = new Audio('klikgamecacing.mp3');
     const bgMusic = new Audio('kidgame.mp3');
-    bgMusic.loop = true; bgMusic.volume = 0.90;
+    bgMusic.loop = true; 
+    bgMusic.volume = 0.9;
 
     // Avatar setup
     const avatarChoices = document.querySelectorAll('.avatar-choice');
@@ -212,8 +221,12 @@
     const selectedAvatarEl = document.getElementById('selected-avatar');
     avatarChoices.forEach(el => {
       el.addEventListener('click', () => {
-        avatarChoices.forEach(a => a.classList.remove('selected'));
+        avatarChoices.forEach(a => {
+          a.classList.remove('selected');
+          a.setAttribute('aria-selected', 'false');
+        });
         el.classList.add('selected');
+        el.setAttribute('aria-selected', 'true');
         selectedAvatar = el.textContent;
         selectedAvatarEl.textContent = selectedAvatar;
         soundClick.currentTime = 0;
@@ -224,10 +237,12 @@
       });
     });
 
-    // Game logic
+    // Game variables
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
-    const gridSize = 20, tileCount = 20;
+    const gridSize = 20;
+    const tileCount = Math.floor(canvas.width / gridSize); // 15
+
     let snake, velocity, food, score, gameInterval, gameStarted = false;
 
     const loveTextEl = document.getElementById('love-text');
@@ -242,151 +257,238 @@
       document.getElementById('score').textContent = `Skor: ${score}`;
     }
 
-    function placeFood(){
-      food = {
-        x: Math.floor(Math.random()*tileCount),
-        y: Math.floor(Math.random()*tileCount)
-      };
-      if(snake.some(s=>s.x===food.x&&s.y===food.y)) placeFood();
+    function placeFood() {
+      let valid = false;
+      let newFood = null;
+      while(!valid) {
+        newFood = {
+          x: Math.floor(Math.random()*tileCount),
+          y: Math.floor(Math.random()*tileCount)
+        };
+        valid = !snake.some(s=>s.x === newFood.x && s.y === newFood.y);
+      }
+      food = newFood;
     }
 
-    function resetGame(){
-      snake = [{x:9,y:9},{x:8,y:9},{x:7,y:9}];
-      velocity = {x:1,y:0};
+    function resetGame() {
+      snake = [
+        {x: 7, y: 7},
+        {x: 6, y: 7},
+        {x: 5, y: 7}
+      ];
+      velocity = {x: 1, y: 0};
       score = 0;
       updateScore();
       placeFood();
       drawGame();
+      gameStarted = true;
     }
 
-    function drawGame(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      snake.forEach(seg=>{
-        ctx.fillStyle = 'rgba(255,255,255,0.85)';
-        ctx.fillRect(seg.x*gridSize, seg.y*gridSize, gridSize,gridSize);
-        ctx.font = `${gridSize-4}px serif`;
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(selectedAvatar, seg.x*gridSize+gridSize/2, seg.y*gridSize+gridSize/2+1);
-      });
-      if(food){
-        ctx.fillStyle = '#ff4d4d';
-        const px = food.x*gridSize, py = food.y*gridSize;
-        ctx.beginPath();
-        ctx.ellipse(px+gridSize/2,py+gridSize/2,gridSize/4,gridSize/4.5,0,0,2*Math.PI);
-        ctx.fill();
-        ctx.fillStyle = '#339933';
-        ctx.beginPath();
-        ctx.ellipse(px+gridSize/2+4,py+gridSize/2-10,4,7,-Math.PI/4,0,2*Math.PI);
-        ctx.fill();
-        ctx.strokeStyle='#663300'; ctx.lineWidth=1.5;
-        ctx.beginPath();
-        ctx.moveTo(px+gridSize/2+3, py+gridSize/2-7);
-        ctx.lineTo(px+gridSize/2+6, py+gridSize/2-3);
-        ctx.stroke();
-      }
-    }
-
-    function checkCollision(){
-      const [h,...body] = snake;
-      return body.some(s=>s.x===h.x && s.y===h.y);
-    }
-
-    function gameOver(){
+    function gameOver() {
       clearInterval(gameInterval);
-      alert(`Game Over! Skor kamu: ${score}`);
+      gameStarted = false;
+      alert(`Game over! Skormu: ${score}`);
       document.getElementById('start-button').style.display = 'inline-block';
       document.getElementById('restart-button').style.display = 'none';
-      gameStarted = false;
     }
 
-    function gameLoop(){
+    function checkCollision() {
+      const head = snake[0];
+      // Cek tabrakan tubuh
+      for(let i=1; i<snake.length; i++) {
+        if(snake[i].x === head.x && snake[i].y === head.y) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function drawGame() {
+      // Clear canvas
+      ctx.fillStyle = '#fff0f5';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw food
+      if(food) {
+        ctx.fillStyle = '#ff69b4';
+        ctx.strokeStyle = '#c71585';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        const foodX = food.x * gridSize + gridSize/2;
+        const foodY = food.y * gridSize + gridSize/2;
+        const radius = gridSize/2 - 4;
+        ctx.arc(foodX, foodY, radius, 0, Math.PI*2);
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      // Draw snake
+      snake.forEach((segment, idx) => {
+        ctx.fillStyle = idx === 0 ? '#ff1493' : '#ff69b4';
+        ctx.strokeStyle = '#c71585';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        const x = segment.x * gridSize;
+        const y = segment.y * gridSize;
+        ctx.fillRect(x, y, gridSize, gridSize);
+        ctx.strokeRect(x, y, gridSize, gridSize);
+
+        // Draw avatar emoji on head only
+        if(idx === 0) {
+          ctx.font = `${gridSize - 4}px serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#fff';
+          ctx.fillText(selectedAvatar, x + gridSize/2, y + gridSize/2 + 2);
+        }
+      });
+    }
+
+    function gameLoop() {
       const head = {...snake[0]};
       head.x += velocity.x;
       head.y += velocity.y;
-      if(head.x<0||head.x>=tileCount||head.y<0||head.y>=tileCount) return gameOver();
+
+      // Game over kalau keluar pinggir canvas
+      if(head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+        return gameOver();
+      }
+
       snake.unshift(head);
-      if(food && head.x===food.x && head.y===food.y){
+
+      if(food && head.x === food.x && head.y === food.y) {
         score++;
         updateScore();
         placeFood();
         showLoveText();
         soundEat.currentTime = 0;
         soundEat.play().catch(()=>{});
-      } else snake.pop();
+      } else {
+        snake.pop();
+      }
+
       if(checkCollision()) return gameOver();
+
       drawGame();
     }
 
-    document.getElementById('start-button').addEventListener('click', () => {
-      if(gameStarted) return;
-      gameStarted = true;
-      resetGame();
-      gameInterval = setInterval(gameLoop, 140);
-      document.getElementById('start-button').style.display = 'none';
-      document.getElementById('restart-button').style.display = 'inline-block';
-      soundClick.currentTime = 0;
-      soundClick.play().catch(()=>{});
-    });
+    // Start/Restart button
+    const startButton = document.getElementById('start-button');
+    const restartButton = document.getElementById('restart-button');
 
-    document.getElementById('restart-button').addEventListener('click', () => {
+    startButton.onclick = () => {
+      if(gameStarted) return;
+      resetGame();
+      startButton.style.display = 'none';
+      restartButton.style.display = 'inline-block';
+      gameInterval = setInterval(gameLoop, 160);
+      soundClick.currentTime = 0;
+      soundClick.play().catch(() => {});
+    };
+
+    restartButton.onclick = () => {
       clearInterval(gameInterval);
       resetGame();
-      gameInterval = setInterval(gameLoop, 140);
+      gameInterval = setInterval(gameLoop, 160);
       soundClick.currentTime = 0;
-      soundClick.play().catch(()=>{});
-    });
+      soundClick.play().catch(() => {});
+    };
 
-    document.getElementById('music-toggle').addEventListener('click', () => {
-      if(bgMusic.paused) {
-        bgMusic.play().catch(() => {});
-        document.getElementById('music-toggle').textContent = 'Hentikan Musik Latar';
-      } else {
-        bgMusic.pause();
-        document.getElementById('music-toggle').textContent = 'Putar Musik Latar';
-      }
-    });
-
+    // Keyboard control
     window.addEventListener('keydown', e => {
       if(!gameStarted) return;
-      const k = e.key;
-      if(k==='ArrowUp' && velocity.y!==1) velocity = {x:0,y:-1};
-      if(k==='ArrowDown' && velocity.y!==-1) velocity = {x:0,y:1};
-      if(k==='ArrowLeft' && velocity.x!==1) velocity = {x:-1,y:0};
-      if(k==='ArrowRight' && velocity.x!==-1) velocity = {x:1,y:0};
-    });
-
-    // Joystick
-    const joystick = document.getElementById('joystick');
-    const stick = document.getElementById('stick');
-    let dragging=false, startX, startY;
-    joystick.addEventListener('pointerdown', e => {
-      dragging = true;
-      startX = e.clientX; startY = e.clientY;
-      stick.style.transition='none';
-    });
-    window.addEventListener('pointermove', e => {
-      if(!dragging) return;
-      const dx = e.clientX - startX, dy = e.clientY - startY;
-      const dist = Math.min(Math.hypot(dx,dy),40);
-      const angle = Math.atan2(dy,dx);
-      const x = Math.cos(angle)*dist;
-      const y = Math.sin(angle)*dist;
-      stick.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
-      if(dist > 15) {
-        if(Math.abs(dx)>Math.abs(dy)) {
-          if(dx>0 && velocity.x!==-1) velocity={x:1,y:0};
-          if(dx<0 && velocity.x!==1) velocity={x:-1,y:0};
-        } else {
-          if(dy>0 && velocity.y!==-1) velocity={x:0,y:1};
-          if(dy<0 && velocity.y!==1) velocity={x:0,y:-1};
-        }
+      switch(e.key) {
+        case 'ArrowUp':
+          if(velocity.y !== 1) { velocity = {x:0, y:-1}; soundClick.play().catch(()=>{}); }
+          break;
+        case 'ArrowDown':
+          if(velocity.y !== -1) { velocity = {x:0, y:1}; soundClick.play().catch(()=>{}); }
+          break;
+        case 'ArrowLeft':
+          if(velocity.x !== 1) { velocity = {x:-1, y:0}; soundClick.play().catch(()=>{}); }
+          break;
+        case 'ArrowRight':
+          if(velocity.x !== -1) { velocity = {x:1, y:0}; soundClick.play().catch(()=>{}); }
+          break;
       }
     });
-    window.addEventListener('pointerup', () => {
-      dragging=false;
-      stick.style.transition='0.2s ease';
-      stick.style.transform='translate(-50%,-50%)';
+
+    // Joystick control
+    const joystick = document.getElementById('joystick');
+    const stick = document.getElementById('stick');
+    let joystickCenter = {x: joystick.offsetWidth/2, y: joystick.offsetHeight/2};
+    let dragging = false;
+
+    function setVelocityFromJoystick(dx, dy) {
+      if(!gameStarted) return;
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+      if(absX > absY) {
+        if(dx > 0 && velocity.x !== -1) velocity = {x: 1, y: 0};
+        else if(dx < 0 && velocity.x !== 1) velocity = {x: -1, y: 0};
+      } else {
+        if(dy > 0 && velocity.y !== -1) velocity = {x: 0, y: 1};
+        else if(dy < 0 && velocity.y !== 1) velocity = {x: 0, y: -1};
+      }
+      soundClick.currentTime = 0;
+      soundClick.play().catch(()=>{});
+    }
+
+    function resetStick() {
+      stick.style.transform = `translate(-50%, -50%)`;
+    }
+
+    joystick.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      joystick.setPointerCapture(e.pointerId);
     });
+
+    joystick.addEventListener('pointermove', (e) => {
+      if(!dragging) return;
+      const rect = joystick.getBoundingClientRect();
+      let dx = e.clientX - rect.left - joystickCenter.x;
+      let dy = e.clientY - rect.top - joystickCenter.y;
+      const maxDist = joystickCenter.x - 10;
+      const dist = Math.min(Math.sqrt(dx*dx + dy*dy), maxDist);
+      const angle = Math.atan2(dy, dx);
+      dx = Math.cos(angle)*dist;
+      dy = Math.sin(angle)*dist;
+      stick.style.transform = `translate(${dx}px, ${dy}px)`;
+      setVelocityFromJoystick(dx, dy);
+    });
+
+    joystick.addEventListener('pointerup', (e) => {
+      dragging = false;
+      joystick.releasePointerCapture(e.pointerId);
+      resetStick();
+    });
+
+    joystick.addEventListener('pointercancel', (e) => {
+      dragging = false;
+      joystick.releasePointerCapture(e.pointerId);
+      resetStick();
+    });
+
+    // Music toggle
+    const musicToggle = document.getElementById('music-toggle');
+    let musicPlaying = false;
+    musicToggle.onclick = () => {
+      if(musicPlaying) {
+        bgMusic.pause();
+        musicPlaying = false;
+        musicToggle.textContent = 'Putar Musik Latar';
+      } else {
+        bgMusic.play().catch(()=>{});
+        musicPlaying = true;
+        musicToggle.textContent = 'Hentikan Musik';
+      }
+      soundClick.currentTime = 0;
+      soundClick.play().catch(() => {});
+    };
+
+    // Initial draw
+    drawGame();
+
   </script>
 </body>
 </html>
