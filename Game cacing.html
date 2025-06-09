@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>🐍 Game Snake Lucu + Avatar + Musik</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
       background: linear-gradient(to bottom, #ffe6f0, #fdf6f9);
@@ -14,13 +18,17 @@
       height: 100vh;
       overflow: hidden;
       padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    #music-control, #control-buttons, a {
-      margin: 6px;
+    h2 {
+      font-size: 20px;
+      margin: 10px 0;
     }
     button, a {
-      font-size: 16px;
-      padding: 10px 18px;
+      font-size: 14px;
+      padding: 8px 16px;
       border-radius: 20px;
       border: none;
       background-color: #ff69b4;
@@ -29,40 +37,61 @@
       box-shadow: 0 0 8px #ff69b4;
       cursor: pointer;
     }
-    button:hover, a:hover { background-color: #e0559a; }
+    button:hover, a:hover {
+      background-color: #e0559a;
+    }
+    #music-control, #control-buttons, a {
+      margin: 6px;
+    }
+    #selected-avatar {
+      font-size: 36px;
+      margin-bottom: 6px;
+    }
     #avatar-list {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 8px;
-      margin: 8px 0;
+      gap: 6px;
+      margin-bottom: 10px;
     }
     .avatar-choice {
-      font-size: 32px;
-      width: 48px;
-      height: 48px;
-      line-height: 48px;
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
       border: 2px solid transparent;
-      border-radius: 10px;
+      border-radius: 8px;
       background: #fff0f5;
-      transition: 0.3s;
       cursor: pointer;
     }
     .avatar-choice.selected {
       border-color: #ff69b4;
       background-color: #ffe6f0;
     }
-    #selected-avatar { font-size: 48px; margin-bottom: 8px; }
-    #game { 
-      width: 100%; max-width: 360px; height: auto;
-      background: #fff; border: 2px solid #ff69b4; border-radius: 14px;
-      box-shadow: 0 0 10px #ffb6c1; display: block; margin: 0 auto;
+    #game {
+      width: 90vw;
+      max-width: 320px;
+      height: 90vw;
+      max-height: 320px;
+      background: #fff;
+      border: 2px solid #ff69b4;
+      border-radius: 14px;
+      box-shadow: 0 0 10px #ffb6c1;
+      display: block;
+      margin: 0 auto;
     }
-    #score { font-size: 16px; color: #d6336c; font-weight: bold; margin: 6px 0; }
+    #score {
+      font-size: 16px;
+      color: #d6336c;
+      font-weight: bold;
+      margin: 4px 0;
+    }
     #love-text {
-      position: absolute; top: 50%; left: 50%;
+      position: absolute;
+      top: 45%;
+      left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 14px;
+      font-size: 13px;
       color: #ff1a75;
       background: rgba(255,182,193,0.9);
       padding: 6px 12px;
@@ -72,25 +101,29 @@
       pointer-events: none;
       transition: opacity .4s ease;
       font-family: 'Comic Sans MS', cursive;
+      z-index: 10;
     }
     #joystick {
       position: fixed;
-      bottom: 16px;
+      bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
-      width: 100px; height: 100px;
+      width: 80px;
+      height: 80px;
       border: 2px solid #ff69b4;
       background: rgba(255,192,203,0.3);
       border-radius: 50%;
       touch-action: none;
-      z-index: 10;
+      z-index: 20;
     }
     #stick {
       position: absolute;
-      width: 50px; height: 50px;
+      width: 40px;
+      height: 40px;
       background: #ff69b4;
       border-radius: 50%;
-      top: 50%; left: 50%;
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
       transition: 0.1s ease;
     }
@@ -125,32 +158,28 @@
 
   <h2>🐍 Snake Game -_-</h2>
 
-  <div id="avatar-container">
-    <div id="selected-avatar">🐰</div>
-    <div id="avatar-list">
-      <div tabindex="0" class="avatar-choice selected">🐰</div>
-      <div tabindex="0" class="avatar-choice">🐱</div>
-      <div tabindex="0" class="avatar-choice">🦊</div>
-      <div tabindex="0" class="avatar-choice">🐼</div>
-      <div tabindex="0" class="avatar-choice">🦄</div>
-      <div tabindex="0" class="avatar-choice">🐥</div>
-      <div tabindex="0" class="avatar-choice">🐸</div>
-      <div tabindex="0" class="avatar-choice">🐢</div>
-      <div tabindex="0" class="avatar-choice">🐙</div>
-      <div tabindex="0" class="avatar-choice">🐯</div>
-    </div>
+  <div id="selected-avatar">🐰</div>
+  <div id="avatar-list">
+    <div tabindex="0" class="avatar-choice selected">🐰</div>
+    <div tabindex="0" class="avatar-choice">🐱</div>
+    <div tabindex="0" class="avatar-choice">🦊</div>
+    <div tabindex="0" class="avatar-choice">🐼</div>
+    <div tabindex="0" class="avatar-choice">🦄</div>
+    <div tabindex="0" class="avatar-choice">🐥</div>
+    <div tabindex="0" class="avatar-choice">🐸</div>
+    <div tabindex="0" class="avatar-choice">🐢</div>
+    <div tabindex="0" class="avatar-choice">🐙</div>
+    <div tabindex="0" class="avatar-choice">🐯</div>
   </div>
 
-  <div id="game-container">
-    <div id="control-buttons">
-      <button id="start-button">Mulai</button>
-      <button id="restart-button" style="display:none;">Ulang</button>
-    </div>
-    <div id="score">Skor: 0</div>
-    <canvas id="game" width="400" height="400"></canvas>
-    <div id="love-text"></div>
+  <div id="control-buttons">
+    <button id="start-button">Mulai</button>
+    <button id="restart-button" style="display:none;">Ulang</button>
   </div>
 
+  <div id="score">Skor: 0</div>
+  <canvas id="game" width="400" height="400"></canvas>
+  <div id="love-text"></div>
   <div id="joystick"><div id="stick"></div></div>
 
   <script>
