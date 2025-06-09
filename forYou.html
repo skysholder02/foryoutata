@@ -96,8 +96,7 @@
       object-fit: cover;
       z-index: 9999;
       background: black;
-
-      pointer-events: none; /* Disable user interaction */
+      pointer-events: none;
       user-select: none;
     }
 
@@ -151,7 +150,6 @@
   <audio id="flowerSound" src="kliklucuu.mp3" preload="auto"></audio>
   <audio id="screamSound" src="seremm.mp3" preload="auto"></audio>
 
-
   <script>
     const clickSound = document.getElementById('clickSound');
     const flowerSound = document.getElementById('flowerSound');
@@ -164,10 +162,8 @@
     const overlayScare = document.getElementById('overlayScare');
     const mainContainer = document.getElementById('mainContainer');
 
-    // Main cupid sound (clickSound) autoplay pas load halaman
     function tryPlayCupid() {
       clickSound.play().catch(() => {
-        // Kalau gagal autoplay, tunggu klik user pertama untuk play
         document.body.addEventListener('click', () => {
           clickSound.play();
         }, { once: true });
@@ -183,6 +179,10 @@
     }
 
     function playFlowerSound() {
+      // Stop cupid sound agar tidak tumpang tindih
+      clickSound.pause();
+      clickSound.currentTime = 0;
+
       flowerSound.pause();
       flowerSound.currentTime = 0;
       flowerSound.play().catch(e => console.log("Error play flowerSound:", e));
@@ -197,28 +197,19 @@
       }, 1000);
     }
 
-    // Buat audio context global untuk boost volume screamSound
     let audioCtx, screamSource, gainNode;
 
     btnFlower.addEventListener('click', async () => {
       playFlowerSound();
 
-      // Stop cupid sound supaya merinding saat video & jeritan main
       clickSound.pause();
       clickSound.currentTime = 0;
-
-      // Disable interactions supaya user gak klik lagi
       mainContainer.style.pointerEvents = 'none';
-
-      // Hide surat dan konten
       letterContent.style.display = 'none';
       letterDiv.style.display = 'none';
-
-      // Tampilkan video jumpscare
       horrorVideo.style.display = 'block';
       horrorVideo.currentTime = 0;
 
-      // Minta fullscreen
       try {
         if (horrorVideo.requestFullscreen) {
           await horrorVideo.requestFullscreen();
@@ -231,12 +222,11 @@
         console.warn("Fullscreen gagal:", err);
       }
 
-      // Inisialisasi Web Audio API jika belum dibuat
       if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         screamSource = audioCtx.createMediaElementSource(screamSound);
         gainNode = audioCtx.createGain();
-        gainNode.gain.value = 10; // tingkatkan volume 5x
+        gainNode.gain.value = 10;
         screamSource.connect(gainNode);
         gainNode.connect(audioCtx.destination);
       }
@@ -244,11 +234,9 @@
       screamSound.pause();
       screamSound.currentTime = 0;
 
-      // Putar video & jeritan
       horrorVideo.play().catch(e => console.log("Video play error:", e));
       screamSound.play().catch(e => console.log("Jeritan play error:", e));
 
-      // Tampilkan overlay scare beberapa detik
       setTimeout(() => {
         overlayScare.style.display = 'block';
         setTimeout(() => {
@@ -257,7 +245,6 @@
       }, 500);
     });
 
-    // Kalau user keluar fullscreen video, coba fullscreen lagi
     document.addEventListener('fullscreenchange', () => {
       if (!document.fullscreenElement && horrorVideo.style.display === 'block') {
         setTimeout(() => {
@@ -266,34 +253,25 @@
       }
     });
 
-    // Loop video biar gak berhenti (sudah loop attribute, ini backup)
     horrorVideo.addEventListener('ended', () => {
       horrorVideo.currentTime = 0;
       horrorVideo.play();
     });
 
-    // Disable keyboard shortcut untuk ubah speed, pause, fullscreen saat video fullscreen aktif
     document.addEventListener('keydown', (e) => {
       if (document.fullscreenElement === horrorVideo) {
         const forbiddenKeys = [
-          ' ', // spasi pause/play
-          'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', // seek
+          ' ', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
           'MediaPlayPause', 'MediaTrackNext', 'MediaTrackPrevious',
-          'F', 'f' // fullscreen toggle
+          'F', 'f'
         ];
-        if (forbiddenKeys.includes(e.key)) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        // Cegah Shift + . / , untuk playback speed
-        if ((e.shiftKey && (e.key === '.' || e.key === ','))) {
+        if (forbiddenKeys.includes(e.key) || (e.shiftKey && (e.key === '.' || e.key === ','))) {
           e.preventDefault();
           e.stopPropagation();
         }
       }
     });
 
-    // Disable context menu di video fullscreen supaya gak ada opsi playback speed
     horrorVideo.addEventListener('contextmenu', (e) => {
       if (document.fullscreenElement === horrorVideo) {
         e.preventDefault();
