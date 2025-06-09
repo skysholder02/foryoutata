@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Galeri Imut Okta 💖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(to bottom right, #ffe0f0, #d5b6ff);
+      overflow-x: hidden;
+    }
+
+    .hearts {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(255,192,203,0.3) 5%, transparent 40%),
+        radial-gradient(circle at 80% 30%, rgba(255,182,193,0.3) 5%, transparent 40%),
+        radial-gradient(circle at 50% 70%, rgba(255,105,180,0.2) 6%, transparent 40%);
+    }
+
+    .petal {
+      position: fixed;
+      top: -50px;
+      width: 20px; height: 20px;
+      background-image: url('https://pngimg.com/uploads/petals/petals_PNG72555.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      opacity: 0.8;
+      animation: fall 8s linear infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(100vh) rotate(360deg); }
+    }
+
+    header, .gallery, .nav-btns {
+      position: relative;
+      z-index: 10;
+    }
+
+    header {
+      padding: 30px 10px 10px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin: 0;
+      color: #c2185b;
+    }
+
+    .profile-okta {
+      margin-top: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #ad1457;
+    }
+
+    .gallery {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .photo-card {
+      background: #fff0f6;
+      border: 2px solid #f8bbd0;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(220, 20, 60, 0.1);
+      transition: transform 0.6s ease, opacity 0.6s ease;
+      position: relative;
+      width: 100%;
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-bottom: 1px solid #f8bbd0;
+    }
+
+    .caption {
+      padding: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #880e4f;
+    }
+
+    .like-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #e91e63;
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      transition: transform 0.3s;
+      z-index: 15;
+    }
+
+    .like-btn.liked {
+      color: #ff1744;
+      transform: scale(1.3);
+    }
+
+    .like-btn:hover {
+      transform: scale(1.3);
+    }
+
+    .btn-cantik, .btn {
+      margin: 10px 8px;
+      padding: 12px 24px;
+      background: #f06292;
+      border: none;
+      border-radius: 30px;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn:hover, .btn-cantik:hover {
+      background: #d81b60;
+      transform: scale(1.05);
+    }
+
+    .glitter {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 10px; height: 10px;
+      background: radial-gradient(circle, #fff 40%, transparent 70%);
+      border-radius: 50%;
+      opacity: 0.8;
+      pointer-events: none;
+      animation: sparkleFade 1s ease-out forwards;
+    }
+
+    @keyframes sparkleFade {
+      to {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    .fade-out {
+      opacity: 0;
+      transform: scale(0.95);
+      transition: all 0.3s ease;
+    }
+
+    .pop-in {
+      opacity: 1 !important;
+      transform: scale(1.05);
+      animation: pop 0.6s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.8); opacity: 0; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    .chibi-okta {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      width: 100px;
+      z-index: 20;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .chibi-okta img {
+      width: 100%;
+    }
+
+    .speech {
+      background: #fff0f6;
+      border: 1px solid #f8bbd0;
+      border-radius: 10px;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      color: #c2185b;
+      position: absolute;
+      bottom: 110%;
+      right: 0;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.5s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5em; }
+      .btn-cantik, .btn { padding: 10px 18px; font-size: 1rem; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="hearts"></div>
+  <div class="glitter" id="sparkle-area"></div>
+
+  <header>
+    <h1>Galeri Imut Okta 💖</h1>
+    <div class="profile-okta">My Queen</div>
+    <p>Karena kamu terlalu cantik buat cuma disimpan di galeri😳💕</p>
+  </header>
+
+  <section class="gallery">
+    <div class="photo-card" id="photoCard">
+      <img id="photoImg" src="anjing kuu.jpeg" alt="Foto Okta" />
+      <div class="caption" id="photoCaption">anjing kuu... gemes bangeett 😍</div>
+      <button class="like-btn" onclick="love(this)">❤️</button>
+    </div>
+    <div class="nav-btns">
+      <button class="btn" onclick="playClick(); nextPhoto()">Next Foto ➡️</button>
+      <button class="btn" onclick="playClick(); randomPhoto()">Random Foto 🎲</button>
+      <button class="btn" onclick="playClick(); kembaliToHp()">Kembali ke Hp</button>
+    </div>
+  </section>
+
+  <div class="chibi-okta" id="chibi">
+    <img src="chibi-okta.png" alt="Chibi Okta" />
+    <div class="speech" id="speech">Haii kamu~ 💕</div>
+  </div>
+
+  <!-- Sound effect -->
+  <audio id="clickSound" src="klikgaleeeri.mp3" preload="auto"></audio>
+
+  <!-- Tambahkan di dalam <body>, di bawah elemen <audio id="clickSound"> -->
+<audio id="bgMusic" src="animal-crosing.mp3" autoplay loop></audio>
+
+
+  <script>
+    const photoData = [
+      { src: "anjing kuu.jpeg", caption: "anjing kuu... gemes bangeett 😍" },
+      { src: "krudung maron cantik.jpeg", caption: "Ini bukan foto, ini bukti kamu bidadari 😭🪽" },
+      { src: "jaket ijo cantik.jpeg", caption: "Kalau cantik itu dosa, kamu udah ditangkep dari dulu 😳" },
+      { src: "krudung hitam cantik.jpeg", caption: "aww matanya 😩✨" },
+      { src: "sama sapi.jpeg", caption: "lagi sama temennya😚❄️" },
+      { src: "jaket biru cantik.jpeg", caption: "aaaa, kamu lucuu banget anjir😩✨" }
+    ];
+
+    let currentIndex = 0;
+
+    function showPhoto(index) {
+      const img = document.getElementById('photoImg');
+      const caption = document.getElementById('photoCaption');
+      const photo = photoData[index];
+      img.classList.add("fade-out");
+      caption.classList.add("fade-out");
+
+      setTimeout(() => {
+        img.src = photo.src;
+        caption.textContent = photo.caption;
+
+        img.classList.remove("fade-out");
+        caption.classList.remove("fade-out");
+
+        img.classList.add("pop-in");
+        caption.classList.add("pop-in");
+
+        setTimeout(() => {
+          img.classList.remove("pop-in");
+          caption.classList.remove("pop-in");
+        }, 600);
+      }, 300);
+    }
+
+    function nextPhoto() {
+      currentIndex = (currentIndex + 1) % photoData.length;
+      showPhoto(currentIndex);
+    }
+
+    function randomPhoto() {
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * photoData.length);
+      } while (newIndex === currentIndex);
+      currentIndex = newIndex;
+      showPhoto(currentIndex);
+    }
+
+    function kembaliToHp() {
+      window.location.href = "awalan.html";
+    }
+
+    function playClick() {
+      document.getElementById('clickSound').play();
+    }
+
+    function love(btn) {
+      btn.classList.add('liked');
+      playClick();
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.style.left = `${e.clientX}px`;
+      sparkle.style.top = `${e.clientY}px`;
+      document.getElementById('sparkle-area').appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 1000);
+    });
+
+    function createPetal() {
+      const petal = document.createElement("div");
+      petal.classList.add("petal");
+      petal.style.left = Math.random() * 100 + "vw";
+      petal.style.animationDuration = 6 + Math.random() * 4 + "s";
+      document.body.appendChild(petal);
+      setTimeout(() => petal.remove(), 10000);
+    }
+    setInterval(createPetal, 500);
+
+    const chibiQuotes = [
+      "Haii kamu~ 💕",
+      "Kamu udah liat kaca hari ini? Soalnya kamu cantik banget 🥺",
+      "Foto kamu bikin aku senyum terus 😳",
+      "Mau pelukkkk 😚",
+      "Kamu lucuuu bangetttt!!!"
+    ];
+
+    function showSpeech(text) {
+      const speech = document.getElementById("speech");
+      speech.textContent = text;
+      speech.style.opacity = 1;
+      speech.style.transform = "translateY(0)";
+      setTimeout(() => {
+        speech.style.opacity = 0;
+        speech.style.transform = "translateY(10px)";
+      }, 3000);
+    }
+
+    setInterval(() => {
+      const randomText = chibiQuotes[Math.floor(Math.random() * chibiQuotes.length)];
+      showSpeech(randomText);
+    }, 10000);
+
+    window.addEventListener('DOMContentLoaded', () => {
+  const bgMusic = document.getElementById('bgMusic');
+
+  // Bantu mengatasi autoplay policy di browser modern
+  const playMusic = () => {
+    bgMusic.volume = 1.0;
+    bgMusic.play().catch(() => {
+      console.log("Autoplay diblokir, musik akan diputar saat interaksi.");
+    });
+    document.removeEventListener('click', playMusic);
+  };
+
+  document.addEventListener('click', playMusic);
+});
+
+  </script>
+</body>
+</html>
